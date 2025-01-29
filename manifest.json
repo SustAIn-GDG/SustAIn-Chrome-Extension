@@ -9,7 +9,19 @@
     "48": "icons/48x48.png",
     "128": "icons/128x128.png"
   },
+  "permissions": ["activeTab","webRequest"],
+  "host_permissions": [
+    "https://chatgpt.com/*"
+  ],
   "author":{
-    "email":"thanuskumaara@gmail.com"
+    "email": "thanuskumaara@gmail.com"
+  },
+  "action":{
+    "default_popup": "popup.html",
+    "default_title": "Project SustAIn"
+  },
+  
+  "background": {
+    "service_worker": "service-worker.js"
   }
 }
