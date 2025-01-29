@@ -6,6 +6,11 @@ chrome.webRequest.onBeforeRequest.addListener(
       handleGeminiRequest(details);
     } else if (details.url.includes("chatgpt.com/backend-api/conversation")) {
       handleChatGPTRequest(details);
+    } else if (
+      details.url.includes("google.com") &&
+      details.url.includes("/GenerateContent")
+    ) {
+      handleAIStudioRequest(details);
     }
   },
   {
@@ -17,7 +22,26 @@ chrome.webRequest.onBeforeRequest.addListener(
   ["requestBody"]
 );
 
+function handleAIStudioRequest(details) {
+  console.log("Handling AI Studio REquest:", details);
 
+  if (details.requestBody) {
+    const decoder = new TextDecoder("utf-8");
+    const requestBody = details.requestBody.raw
+      ? decoder.decode(details.requestBody.raw[0].bytes)
+      : null;
+
+    if (requestBody) {
+      try {
+        const payload = JSON.parse(requestBody);
+        // Process the Gemini request payload here
+        console.log("Gemini Request Body:", payload);
+      } catch (error) {
+        console.error("Failed to parse Gemini request body:", error);
+      }
+    }
+  }
+}
 function handleGeminiRequest(details) {
   console.log("Handling Gemini Request:", details);
 

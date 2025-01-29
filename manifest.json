@@ -12,7 +12,9 @@
   "permissions": ["activeTab","webRequest"],
   "host_permissions": [
     "https://chatgpt.com/*",
-    "https://gemini.google.com/*"
+    "https://gemini.google.com/*",
+    "https://aistudio.google.com/prompts/*",
+    "https://alkalimakersuite-pa.clients6.google.com/*"
   ],
   "author":{
     "email": "thanuskumaara@gmail.com"
