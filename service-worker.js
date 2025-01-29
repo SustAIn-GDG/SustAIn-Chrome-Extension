@@ -6,20 +6,41 @@ chrome.webRequest.onBeforeRequest.addListener(
       handleGeminiRequest(details);
     } else if (details.url.includes("chatgpt.com/backend-api/conversation")) {
       handleChatGPTRequest(details);
-    } else if (
-      details.url.includes("google.com") &&
-      details.url.includes("/GenerateContent")
-    ) {
-      handleAIStudioRequest(details);
     }
   },
   {
     urls: [
+      "https://gemini.google.com/*/StreamGenerate*",
       "https://chatgpt.com/backend-api/conversation",
     ], // Add specific URLs for Gemini and ChatGPT
   },
   ["requestBody"]
 );
+
+
+function handleGeminiRequest(details) {
+  console.log("Handling Gemini Request:", details);
+
+  if (details.requestBody && details.requestBody.formData) {
+    const formData = details.requestBody.formData;
+
+    // Extract 'f.req' field which contains the request payload
+    if (formData["f.req"]) {
+      try {
+        const requestData = JSON.parse(formData["f.req"][0]); // Extract and parse the first element of 'f.req' array
+        console.log("Parsed Gemini Request Data:", requestData);
+
+        // Extract the actual message from the structured data
+        const userMessage = JSON.parse(requestData[1])[0][0];
+        console.log("User Input to Gemini:", userMessage);
+      } catch (error) {
+        console.error("Failed to parse Gemini request body:", error);
+      }
+    } else {
+      console.warn("No 'f.req' field found in Gemini request.");
+    }
+  }
+}
 
 function handleChatGPTRequest(details) {
   console.log("Handling ChatGPT Request:", details);
