@@ -16,7 +16,11 @@ chrome.webRequest.onCompleted.addListener(
 
 chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
-    if (details.url.includes("gemini.google.com") && details.url.includes("StreamGenerate")) {
+    notifyUser();
+    if (
+      details.url.includes("gemini.google.com") &&
+      details.url.includes("StreamGenerate")
+    ) {
       handleGeminiRequest(details);
     } else if (details.url.includes("chatgpt.com/backend-api/conversation")) {
       handleChatGPTRequest(details);
@@ -103,4 +107,13 @@ function handleChatGPTRequest(details) {
       }
     }
   }
+}
+
+function notifyUser() {
+  chrome.action.setBadgeText({ text: "NEW" }); // Warning sign emoji
+  chrome.action.setBadgeBackgroundColor({ color: "#007acc" }); // Bright orange background
+  // Reset badge after 2 seconds
+  setTimeout(() => {
+    chrome.action.setBadgeText({ text: "" });
+  }, 2000);
 }
