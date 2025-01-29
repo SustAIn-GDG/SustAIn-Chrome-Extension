@@ -1,7 +1,7 @@
 chrome.webRequest.onCompleted.addListener(
   function (details) {
-    if(details.ip) {
-      console.log("IP address of cloud server: ",details.ip);
+    if (details.ip) {
+      console.log("IP address of cloud server: ", details.ip);
     }
   },
   {
@@ -16,8 +16,7 @@ chrome.webRequest.onCompleted.addListener(
 
 chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
-    console.log("Intercepting data from: ", details.url);
-    if (details.url.includes("gemini.google.com")) {
+    if (details.url.includes("gemini.google.com") && details.url.includes("StreamGenerate")) {
       handleGeminiRequest(details);
     } else if (details.url.includes("chatgpt.com/backend-api/conversation")) {
       handleChatGPTRequest(details);
@@ -33,14 +32,13 @@ chrome.webRequest.onBeforeRequest.addListener(
       "https://gemini.google.com/*/StreamGenerate*",
       "https://chatgpt.com/backend-api/conversation",
       "https://alkalimakersuite-pa.clients6.google.com/*/GenerateContent",
-    ], // Add specific URLs for Gemini and ChatGPT
+    ],
   },
   ["requestBody"]
 );
 
+// function for hadling Google AI studio requests
 function handleAIStudioRequest(details) {
-  console.log("Handling AI Studio REquest:", details);
-
   if (details.requestBody) {
     const decoder = new TextDecoder("utf-8");
     const requestBody = details.requestBody.raw
@@ -58,19 +56,15 @@ function handleAIStudioRequest(details) {
     }
   }
 }
-function handleGeminiRequest(details) {
-  console.log("Handling Gemini Request:", details);
 
+// function for hadling Gemini requests
+function handleGeminiRequest(details) {
   if (details.requestBody && details.requestBody.formData) {
     const formData = details.requestBody.formData;
 
-    // Extract 'f.req' field which contains the request payload
     if (formData["f.req"]) {
       try {
-        const requestData = JSON.parse(formData["f.req"][0]); // Extract and parse the first element of 'f.req' array
-        console.log("Parsed Gemini Request Data:", requestData);
-
-        // Extract the actual message from the structured data
+        const requestData = JSON.parse(formData["f.req"][0]);
         const userMessage = JSON.parse(requestData[1])[0][0];
         console.log("User Input to Gemini:", userMessage);
       } catch (error) {
@@ -82,9 +76,8 @@ function handleGeminiRequest(details) {
   }
 }
 
+// function for hadling ChatGPT requests
 function handleChatGPTRequest(details) {
-  console.log("Handling ChatGPT Request:", details);
-
   if (details.requestBody) {
     const decoder = new TextDecoder("utf-8");
     const requestBody = details.requestBody.raw
@@ -94,15 +87,14 @@ function handleChatGPTRequest(details) {
     if (requestBody) {
       try {
         const payload = JSON.parse(requestBody);
-        console.log(payload);
         // Extracting specific fields
-        const action = payload.action;
-        const model = payload.messages[0]?.model || payload.model;
-        const data = payload.messages[0]?.content?.parts || [];
-        const conversationId = payload.conversation_id;
+        const model =
+          payload.messages[0]?.model || payload?.model || "No model found";
+        const data = payload.messages[0]?.content?.parts || "No messages found";
+        const conversationId =
+          payload?.conversation_id || "Conversation ID not found";
 
         console.log("Extracted ChatGPT Data:");
-        console.log("Action:", action);
         console.log("Model:", model);
         console.log("Data:", data);
         console.log("Conversation ID:", conversationId);
