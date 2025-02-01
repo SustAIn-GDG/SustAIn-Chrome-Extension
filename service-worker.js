@@ -17,6 +17,7 @@ chrome.webRequest.onCompleted.addListener(
 chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
     notifyUser();
+    console.log(details);
     if (
       details.url.includes("gemini.google.com") &&
       details.url.includes("StreamGenerate")
@@ -34,7 +35,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   {
     urls: [
       "https://gemini.google.com/*/StreamGenerate*",
-      "https://chatgpt.com/backend-api/conversation",
+      "https://chatgpt.com/backend-api/conversation/*",
       "https://alkalimakersuite-pa.clients6.google.com/*/GenerateContent",
     ],
   },
@@ -52,8 +53,14 @@ function handleAIStudioRequest(details) {
     if (requestBody) {
       try {
         const payload = JSON.parse(requestBody);
-        // Process the Gemini request payload here
-        console.log("Gemini Request Body:", payload);
+        let lastMessage;
+        for (let i = 0; i < payload[1].length; i++) {
+          const message = payload[1][i];
+          if (message && message[1] === "user") {
+            lastMessage = message[0][0][1];
+          }
+        }
+        console.log("Last User Query:", lastMessage);
       } catch (error) {
         console.error("Failed to parse Gemini request body:", error);
       }
@@ -84,7 +91,16 @@ function handleGeminiRequest(details) {
 
 // function for hadling ChatGPT requests
 function handleChatGPTRequest(details) {
-  if (details.requestBody) {
+  const url = new URL(details.url);
+  const pathSegments = url.pathname.split("/");
+  if (
+    pathSegments.length == 4 &&
+    pathSegments[2] === "conversation" &&
+    details.method === "GET"
+  ) {
+    const conversationId = pathSegments[3]; // Extract conversation ID
+    console.log("New Conversation ID:", conversationId);
+  } else if (details.requestBody && pathSegments.length == 3) {
     const decoder = new TextDecoder("utf-8");
     const requestBody = details.requestBody.raw
       ? decoder.decode(details.requestBody.raw[0].bytes)
