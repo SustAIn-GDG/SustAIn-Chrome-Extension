@@ -21,7 +21,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
     // Gemini URL format: https://gemini.google.com/app/{conversationId}?hl=en-IN
     const pathSegments = url.pathname.split("/");
     if (pathSegments.length >= 3 && pathSegments[1] === "app") {
-      conversationId = pathSegments[2].split("?")[0]; // Extract conversation ID before query params
+      conversationId = "c_" + pathSegments[2].split("?")[0]; // Extract conversation ID before query params
       supportedSite = true;
     }
   }

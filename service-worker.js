@@ -82,8 +82,8 @@ function handleGeminiRequest(details) {
         const requestData = JSON.parse(formData["f.req"][0]);
         const userMessage = JSON.parse(requestData[1])[0][0];
         const conversationId = JSON.parse(requestData[1])[2][0];
-        console.log("User Input to Gemini:", userMessage);
-        console.log("Conversation id: ", conversationId);
+        global_conversation_id = conversationId;
+        storeConversation(conversationId, userMessage, "Gemini 2.0 Flash");
       } catch (error) {
         console.error("Failed to parse Gemini request body:", error);
       }
@@ -125,7 +125,7 @@ function handleChatGPTRequest(details) {
         console.log("Data:", data);
         console.log("Conversation ID:", conversationId);
         global_conversation_id = conversationId;
-        storeConversation(conversationId, data, model);
+        storeConversation(conversationId, data[0], model);
       } catch (error) {
         console.error("Failed to parse ChatGPT request body:", error);
       }
