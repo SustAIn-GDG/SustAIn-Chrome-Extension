@@ -54,6 +54,21 @@ chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         .then((response) => response.json()) // Assuming backend responds with JSON
         .then((data) => {
           console.log("Data sent successfully:", data);
+          chrome.storage.local.get("conversations", function (result) {
+            if (result.conversations) {
+              delete result.conversations[conversationId];
+
+              chrome.storage.local.set(
+                { conversations: result.conversations },
+                function () {
+                  console.log(
+                    "Deleted conversation from storage:",
+                    conversationId
+                  );
+                }
+              );
+            }
+          });
         })
         .catch((error) => {
           console.error("Error sending data:", error);
