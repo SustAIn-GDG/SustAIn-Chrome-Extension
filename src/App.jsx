@@ -5,6 +5,7 @@ import {
   // sendConversationToBackend,
   simulateBackend,
 } from "./utils/utils";
+import Header from "./components/header";
 
 function Popup() {
   const [conversationId, setConversationId] = useState(null);
@@ -41,9 +42,14 @@ function Popup() {
   }, []);
 
   return (
-    <div className="flex px-8 py-4 rounded-full ">
-      <h1>SustAIn</h1>
-      <p>Conversation ID: {conversationId || "None found"}</p>
+    <div className="p-6 rounded-lg shadow-lg w-[400px] h-auto">
+      <Header />
+      <p className="text-black">
+        Conversation ID: {conversationId || "None found"}
+      </p>
+      <p className="text-black">CO2: {co2 || "N/A"}</p>
+      <p className="text-black">Water: {water || "N/A"}</p>
+      <p className="text-black">Energy: {energy || "N/A"}</p>
     </div>
   );
 }
