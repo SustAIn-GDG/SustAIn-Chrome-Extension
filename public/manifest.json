@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "SustAIn",
+  "version": "1.0.0",
+  "description": "A dedicated Chrome extension designed to raise awareness about sustainability when using AI technologies",
+  "permissions": ["activeTab", "webRequest", "storage"],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://gemini.google.com/*",
+    "https://aistudio.google.com/prompts/*"
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Project SustAIn"
+  },
+  "content_scripts": [
+    {
+      "js": ["content.js"],
+      "matches": ["https://gemini.google.com/*"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
