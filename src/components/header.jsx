@@ -1,40 +1,19 @@
-export default function Header() {
+const Header = () => {
   return (
-    <div className="text-black">
-      <div className="container mx-auto py-4 px-6">
-        <div className="flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center gap-4">
-            <div className="bg-white p-2 rounded-full shadow-md">
-              <img
-                src="/assets/logo_gdg.png"
-                alt="SustAIn"
-                className="h-16 w-16"
-                height={64}
-                width={64}
-              />
-            </div>
-            <div className="">
-              <h1 className="text-4xl font-bold tracking-tight">SustAIn</h1>
-              <p className="text-gray-900 font-medium mt-1 text-left text-sm">
-                Know Your Impact, Make a Difference.
-              </p>
-              <div className="mt-1">
-                <p className="text-gray-800 font-medium flex items-center">
-                  Built for
-                  <img
-                    src="/assets/google.webp"
-                    alt="Google"
-                    className="h-5 w-5 mx-1"
-                    height={20}
-                    width={20}
-                  />
-                  Solutions Challenge
-                </p>
-              </div>
-            </div>
-          </div>
+    <header className="flex relative flex-col items-start w-full border-b border-black bg-white bg-opacity-60">
+      <div className="flex gap-2 items-center p-2">
+        <img
+          src="https://cdn.builder.io/api/v1/image/assets/TEMP/c8c99e03427a3da8508577654a8a294af81b5ed16d48a6160a745c6b4efa2902?placeholderIfAbsent=true"
+          alt="SustAIn Logo"
+          className="object-contain shrink-0 self-stretch my-auto aspect-square w-[54px]"
+        />
+        <div className="flex flex-col justify-center self-stretch my-auto w-[214px]">
+          <h1 className="text-2xl font-bold">SustAIn</h1>
+          <p className="text-xs">Know your Impact, Make a Difference</p>
         </div>
       </div>
-    </div>
+    </header>
   );
-}
+};
+
+export default Header;

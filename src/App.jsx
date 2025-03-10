@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import {
   getConversationId,
@@ -6,6 +8,8 @@ import {
   simulateBackend,
 } from "./utils/utils";
 import Header from "./components/header";
+import MetricsDisplay from "./components/metricsDisplay";
+import Footer from "./components/footer";
 
 function Popup() {
   const [conversationId, setConversationId] = useState(null);
@@ -42,15 +46,19 @@ function Popup() {
   }, []);
 
   return (
-    <div className="p-6 rounded-lg shadow-lg w-[400px] h-auto">
-      <Header />
-      <p className="text-black">
-        Conversation ID: {conversationId || "None found"}
-      </p>
-      <p className="text-black">CO2: {co2 || "N/A"}</p>
-      <p className="text-black">Water: {water || "N/A"}</p>
-      <p className="text-black">Energy: {energy || "N/A"}</p>
-    </div>
+    <main className="overflow-hidden text-black bg-white w-[400px] max-w-[400px]">
+      <div className="flex relative flex-col w-full aspect-[0.576]">
+        <img
+          src="https://cdn.builder.io/api/v1/image/assets/TEMP/a451c8ccf732a92ae7722c4ede7f8115e22b11d9b8212f5a2288f82bb9b48fe8?placeholderIfAbsent=true"
+          alt="Background"
+          className="object-cover absolute inset-0 size-full"
+          aria-hidden="true"
+        />
+        <Header />
+        <MetricsDisplay />
+        <Footer />
+      </div>
+    </main>
   );
 }
 
