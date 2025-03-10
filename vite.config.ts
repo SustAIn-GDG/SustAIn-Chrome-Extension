@@ -9,7 +9,11 @@ export default defineConfig({
       targets: [
         {
           src: "public/manifest.json",
-          dest: ".",
+          dest: ".", // Root of the build directory
+        },
+        {
+          src: "public/assets", // Copy assets (JS files for background & content scripts)
+          dest: "assets",
         },
       ],
     }),
