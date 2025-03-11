@@ -1,67 +1,67 @@
 const co2analogies = [
   {
     threshold: 0.1,
-    factor: 0.04,
+    factor: 40, // grams per human breath
     item: "🫁 Human breathing",
     desc: "%vh of breathing",
   },
   {
     threshold: 1,
-    factor: 1,
+    factor: 1000, // grams of CO₂ per daily exhalation
     item: "🫁 Daily CO₂",
     desc: "%v of daily exhalation",
   },
   {
     threshold: 5,
-    factor: 0.12,
+    factor: 120, // grams of CO₂ per kilometer walked
     item: "🚶 Walking",
     desc: "%vkm walked",
   },
   {
     threshold: 25,
-    factor: 0.25,
+    factor: 250, // grams of CO₂ per kilometer by car
     item: "🚗 Car travel",
     desc: "%vkm by car",
   },
   {
     threshold: 100,
-    factor: 50,
+    factor: 2500, // grams of CO₂ per bus ride
     item: "🚌 Bus ride",
     desc: "%v bus journeys",
   },
   {
     threshold: 500,
-    factor: 120,
+    factor: 120000, // grams of CO₂ per year of smartphone use
     item: "📱 Smartphone",
     desc: "%v years of use",
   },
   {
     threshold: 1000,
-    factor: 200,
+    factor: 240000, // grams of CO₂ per year of hot showers
     item: "🚿 Hot showers",
     desc: "%v years of showers",
   },
   {
     threshold: 5000,
-    factor: 500,
+    factor: 600000, // grams of CO₂ per hour-long flight
     item: "✈️ Flight",
     desc: "%v hour-long flights",
   },
   {
     threshold: 20000,
-    factor: 1800,
+    factor: 3600000, // grams of CO₂ per month at home
     item: "🏠 Home emissions",
     desc: "%v months at home",
   },
   {
     threshold: 100000,
-    factor: 20000,
+    factor: 40000000, // grams of CO₂ per year in a car
     item: "🚗 Annual driving",
     desc: "%v years in a car",
   },
   {
     threshold: Infinity,
-    factor: 4500000,
+    factor: 4500000000, // grams of CO₂ per day for a town
     item: "🏙️ Town emissions",
     desc: "%v days for a town",
   },

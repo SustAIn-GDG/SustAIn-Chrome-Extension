@@ -1,13 +1,13 @@
 import Header from "./components/Header";
 import MetricsDisplay from "./components/MetricsDisplay";
-import AnimatedLoader from "./components/AnimatedLoader";
+import AnimatedLoader from "./components/animatedLoader";
 import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
 import {
   fetchConversationFromStorage,
   getConversationId,
-  simulateBackend,
   getSiteIcon,
+  sendConversationToBackend,
 } from "./utils/utils";
 
 export default function Popup() {
@@ -17,7 +17,7 @@ export default function Popup() {
   const [energy, setEnergy] = useState(null);
   const [siteIcon, setSiteIcon] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [compatability, setCompatability] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,6 +36,7 @@ export default function Popup() {
         const { conversationId, supportedSite } = getConversationId(url);
 
         if (!supportedSite) {
+          setCompatability("Unsupported site or invalid conversation ID.");
           throw new Error("Unsupported site or invalid conversation ID.");
         }
 
@@ -43,28 +44,33 @@ export default function Popup() {
         setSiteIcon(getSiteIcon(url));
 
         // Fetch conversation data
-        fetchConversationFromStorage(conversationId, (conversationData) => {
-          try {
+        fetchConversationFromStorage(
+          conversationId,
+          async (conversationData) => {
             if (!conversationData) {
               throw new Error("No conversation data found.");
             }
 
-            const res = simulateBackend(conversationData, conversationId);
-            setCo2(res.CO2);
-            setWater(res.Water);
-            setEnergy(res.Energy);
+            try {
+              const res = await sendConversationToBackend(
+                conversationData,
+                conversationId
+              );
 
-            // Use a shorter timeout for testing
-            setTimeout(() => {
+              console.log("Metrics received:", res);
+
+              setCo2(res.CarbonEmission);
+              setWater(res.WaterConsumption);
+              setEnergy(res.EnergyConsumption);
               setIsLoading(false);
-            }, 3000); // Reduced from 10000 for faster feedback
-          } catch (err) {
-            setError(err.message);
-            setIsLoading(false);
+            } catch (err) {
+              console.error("Error sending data:", err);
+              setIsLoading(false);
+            }
           }
-        });
+        );
       } catch (err) {
-        setError(err.message);
+        console.error("Error fetching data:", err);
         setIsLoading(false);
       }
     };
@@ -85,7 +91,7 @@ export default function Popup() {
             <div className="mt-2">
               <AnimatedLoader />
             </div>
-          ) : error ? (
+          ) : compatability ? (
             <div className="text-center p-4 bg-white rounded-lg shadow-md mt-4">
               <h3 className="font-bold text-lg text-teal-600 mb-2">
                 Welcome to SustAIn!
@@ -109,9 +115,9 @@ export default function Popup() {
             <MetricsDisplay
               siteIcon={siteIcon}
               conversationID={conversationId}
-              co2={co2}
-              water={water}
-              energy={energy}
+              currentCO2={co2}
+              currentWater={water}
+              currentEnergy={energy}
             />
           )}
         </div>

@@ -28,7 +28,7 @@ const AnimatedLoader = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center py-6 w-full rounded-2xl bg-white bg-opacity-90 shadow-lg max-w-[320px] border border-gray-100">
+    <div className="flex flex-col items-center justify-center py-6 rounded-2xl bg-white bg-opacity-90 shadow-lg w-[320px] border border-gray-100">
       <div className="w-32 h-32 flex items-center justify-center relative">
         {/* Eco-themed animated loader */}
         <div className="absolute">

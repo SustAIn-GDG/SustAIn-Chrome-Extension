@@ -22,46 +22,117 @@ export function getConversationId(url) {
   return { conversationId, supportedSite };
 }
 
+export function saveConversationToBrowserStorage(
+  conversationId,
+  conversationData
+) {
+  try {
+    // Get existing conversations or initialize empty object
+    const existingData = localStorage.getItem("sustAIn_conversations");
+    const conversations = existingData ? JSON.parse(existingData) : {};
+
+    // Add/update the conversation
+    conversations[conversationId] = conversationData;
+
+    // Save back to localStorage
+    localStorage.setItem(
+      "sustAIn_conversations",
+      JSON.stringify(conversations)
+    );
+    console.log("Saved conversation to browser localStorage:", conversationId);
+  } catch (error) {
+    console.error("Error saving to browser localStorage:", error);
+  }
+}
+
 export function fetchConversationFromStorage(conversationId, callback) {
+  // First try to get from chrome.storage (extension storage)
   chrome.storage.local.get("conversations", function (result) {
     if (result.conversations && result.conversations[conversationId]) {
-      callback({ [conversationId]: result.conversations[conversationId] });
+      const conversationData = {
+        [conversationId]: result.conversations[conversationId],
+      };
+
+      // Also save to browser localStorage for persistence
+      saveConversationToBrowserStorage(
+        conversationId,
+        result.conversations[conversationId]
+      );
+
+      callback(conversationData);
     } else {
-      console.error("Conversation not found for ID:", conversationId);
+      console.log(
+        "Conversation not found in extension storage, checking browser localStorage..."
+      );
+
+      // If not in chrome.storage, try to get from browser localStorage
+      try {
+        const localData = localStorage.getItem("sustAIn_conversations");
+        if (localData) {
+          const parsedData = JSON.parse(localData);
+          if (parsedData && parsedData[conversationId]) {
+            console.log(
+              "Found conversation in browser localStorage:",
+              conversationId
+            );
+            callback({ [conversationId]: parsedData[conversationId] });
+
+            // Sync back to chrome.storage for future use
+            chrome.storage.local.get("conversations", function (chromeResult) {
+              const conversations = chromeResult.conversations || {};
+              conversations[conversationId] = parsedData[conversationId];
+              chrome.storage.local.set({ conversations }, function () {
+                console.log(
+                  "Synced conversation from localStorage to chrome.storage"
+                );
+              });
+            });
+
+            return;
+          }
+        }
+
+        console.error(
+          "Conversation not found in any storage for ID:",
+          conversationId
+        );
+        callback(null);
+      } catch (error) {
+        console.error("Error accessing browser localStorage:", error);
+        callback(null);
+      }
     }
   });
 }
 
 export function sendConversationToBackend(conversationData, conversationId) {
-  fetch("https://localhost:443/calculate_metrics", {
+  return fetch("http://localhost:8080/calculate_metrics", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(conversationData),
   })
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Failed to send data to the backend.");
+      }
+      console.log("Response:", response);
+      return response.json();
+    })
     .then((data) => {
       console.log("Data sent successfully:", data);
       deleteConversationFromStorage(conversationId);
+      return data;
     })
     .catch((error) => {
       console.error("Error sending data:", error);
+      throw error;
     });
 }
 
-export function simulateBackend(conversationData, conversationId) {
-  console.log("Simulating backend for conversation:", conversationId);
-  console.log("Conversation data:", conversationData);
-  const res = {
-    CO2: parseFloat((Math.random() * 1000000).toFixed(6)),
-    Water: parseFloat((Math.random() * 1000000).toFixed(6)),
-    Energy: parseFloat((Math.random() * 1000000).toFixed(6)),
-  };
-  return res;
-}
-
 export function deleteConversationFromStorage(conversationId) {
+  // Delete from chrome.storage
   chrome.storage.local.get("conversations", function (result) {
     if (result.conversations) {
       delete result.conversations[conversationId];
@@ -69,13 +140,38 @@ export function deleteConversationFromStorage(conversationId) {
       chrome.storage.local.set(
         { conversations: result.conversations },
         function () {
-          console.log("Deleted conversation from storage:", conversationId);
+          console.log(
+            "Deleted conversation from chrome storage:",
+            conversationId
+          );
         }
       );
     }
   });
+
+  // Also delete from browser localStorage
+  try {
+    const localData = localStorage.getItem("sustAIn_conversations");
+    if (localData) {
+      const parsedData = JSON.parse(localData);
+      if (parsedData && parsedData[conversationId]) {
+        delete parsedData[conversationId];
+        localStorage.setItem(
+          "sustAIn_conversations",
+          JSON.stringify(parsedData)
+        );
+        console.log(
+          "Deleted conversation from browser localStorage:",
+          conversationId
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error deleting from browser localStorage:", error);
+  }
 }
 
+// Rest of your utility functions remain unchanged
 export function getSiteIcon(url) {
   console.log("URL in getSiteIcon:", url);
   if (url.hostname.includes("chatgpt.com")) {
@@ -116,19 +212,15 @@ export function animateCount(targetValue, setValue, duration = 1500) {
 }
 
 export function mapMetricToAnalogy(type, value) {
-  // Format number with appropriate units and scale
-  function formatNumber(num) {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
-    if (num >= 1000) return (num / 1000).toFixed(1) + "k";
-    return num.toFixed(1);
-  }
-
+  // Existing function unchanged
   switch (type) {
     case "co2": {
       const analogies = co2analogies;
 
       for (const analogy of analogies) {
-        if (value <= analogy.threshold) {
+        // Adjusted threshold comparison to match the gram scale
+        if (value <= analogy.threshold * 100) {
+          // scale threshold by 100 (adjust as needed)
           const quantity = value / analogy.factor;
           let result = analogy.desc.replace(
             "%v",
@@ -206,15 +298,6 @@ export function mapMetricToAnalogy(type, value) {
   }
 }
 
-/**
- * Extrapolates metrics to a larger scale and returns a concise paragraph with realistic values
- * @param {number} co2Value - CO2 value in kg
- * @param {number} waterValue - Water value in liters
- * @param {number} energyValue - Energy value in Wh
- * @param {number} queries - Number of queries to extrapolate to (default: 10M)
- * @param {string} timeframe - Timeframe for the extrapolation (default: "day")
- * @returns {string} Formatted paragraph with extrapolated metrics
- */
 export function extrapolateMetrics(
   co2Value,
   waterValue,
@@ -222,6 +305,7 @@ export function extrapolateMetrics(
   queries = 10000000,
   timeframe = "day"
 ) {
+  // Existing function unchanged
   // Calculate extrapolation factor
   const factor = queries;
 

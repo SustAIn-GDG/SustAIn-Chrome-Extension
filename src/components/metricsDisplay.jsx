@@ -4,12 +4,13 @@ import { useState } from "react";
 import MetricCard from "./metricCard";
 import { mapMetricToAnalogy, extrapolateMetrics } from "../utils/utils";
 
-const MetricsDisplay = ({ siteIcon, conversationID }) => {
-  // Current metrics values from the conversation
-  const currentCO2 = 0.1; // in kg
-  const currentWater = 1.5; // in liters
-  const currentEnergy = 75; // in Wh
-
+const MetricsDisplay = ({
+  siteIcon,
+  conversationID,
+  currentCO2,
+  currentEnergy,
+  currentWater,
+}) => {
   // Generate the extrapolation paragraph
   const extrapolationText = extrapolateMetrics(
     currentCO2,
@@ -89,7 +90,11 @@ const MetricsDisplay = ({ siteIcon, conversationID }) => {
       <div className="overflow-hidden py-2 w-full space-y-5">
         <MetricCard
           icon="/assets/co2.png"
-          value={`${currentCO2} kg CO₂`}
+          value={
+            currentCO2 > 1000
+              ? `${currentCO2 / 1000} Kg CO₂`
+              : `${currentCO2} g CO₂`
+          }
           description={mapMetricToAnalogy("co2", currentCO2)}
           gradientBackground="bg-gradient-to-br from-green-50 to-green-200"
         />
@@ -101,7 +106,11 @@ const MetricsDisplay = ({ siteIcon, conversationID }) => {
         />
         <MetricCard
           icon="/assets/energy.png"
-          value={`${currentEnergy} Wh (${currentEnergy / 1000} kWh)`}
+          value={
+            currentEnergy > 1000
+              ? `${currentEnergy / 1000} kWh`
+              : `${currentEnergy} Wh`
+          }
           description={mapMetricToAnalogy("energy", currentEnergy)}
           gradientBackground="bg-gradient-to-br from-amber-50 to-amber-200"
         />
