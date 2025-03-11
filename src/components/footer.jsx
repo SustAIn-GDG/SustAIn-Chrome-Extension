@@ -1,11 +1,21 @@
 const Footer = () => {
   return (
-    <footer className="relative mt-4.5 w-full text-[9px] border-t border-black bg-white bg-opacity-60">
-      <div className="flex gap-7.5 justify-between items-center px-4 py-0.5 w-full bg-white bg-opacity-60">
-        <p className="self-stretch my-auto w-[138px]">
-          Made with ❤️ by Team SustAIn
+    <footer className="relative mt-4 w-full border-t border-gray-200 bg-white bg-opacity-90">
+      <div className="flex justify-between items-center px-4 py-2 w-full">
+        <p className="text-xs text-gray-600 flex items-center">
+          Made with
+          <span className="mx-1 text-red-500">❤️</span>
+          by Team SustAIn
         </p>
-        <p className="self-stretch my-auto w-[94px]">For G Soluton Challange</p>
+        <div className="flex items-center text-xs text-gray-600">
+          For
+          <img
+            src="/assets/google.webp"
+            alt="Google"
+            className="h-4 mx-1 object-contain"
+          />
+          Solution Challenge
+        </div>
       </div>
     </footer>
   );
