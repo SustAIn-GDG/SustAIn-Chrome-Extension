@@ -205,3 +205,63 @@ export function mapMetricToAnalogy(type, value) {
       return "No analogy available";
   }
 }
+
+/**
+ * Extrapolates metrics to a larger scale and returns a concise paragraph with realistic values
+ * @param {number} co2Value - CO2 value in kg
+ * @param {number} waterValue - Water value in liters
+ * @param {number} energyValue - Energy value in Wh
+ * @param {number} queries - Number of queries to extrapolate to (default: 10M)
+ * @param {string} timeframe - Timeframe for the extrapolation (default: "day")
+ * @returns {string} Formatted paragraph with extrapolated metrics
+ */
+export function extrapolateMetrics(
+  co2Value,
+  waterValue,
+  energyValue,
+  queries = 10000000,
+  timeframe = "day"
+) {
+  // Calculate extrapolation factor
+  const factor = queries;
+
+  // CO2: reasonable scaling (2.5kg → 25,000 tons for 10M queries)
+  const totalCO2 = (co2Value * factor) / 1000; // Convert to tons
+
+  // Water: reasonable scaling (1200L → 12 billion liters for 10M queries)
+  const totalWater = (waterValue * factor) / 1000000; // Convert to million liters
+
+  // Energy: corrected scaling (80kWh → 800 GWh, not 800,000)
+  const totalEnergy = (energyValue * factor) / 1000000; // Convert to GWh
+
+  // Calculate real-world equivalents with realistic values
+  // Average car emits ~5 tons CO2/year
+  const carsPerYear = Math.round(totalCO2 / 5);
+
+  // ~50L per person per day → 12B liters would supply ~240M people for a day
+  // This is still high, let's make it more realistic
+  const peopleWaterPerDay = Math.round((totalWater * 1000000) / 150); // 150L per person per day is more realistic
+
+  // Average home uses ~30kWh per day
+  const homesPerDay = Math.round((totalEnergy * 1000) / 30); // 30kWh per home per day
+
+  // Format numbers for readability
+  const formatNumber = (num) => {
+    if (num >= 1000000) return `${Math.round(num / 100000) / 10}M`;
+    if (num >= 1000) return `${Math.round(num / 100) / 10}k`;
+    return Math.round(num);
+  };
+
+  // Build the paragraph with properly scaled metrics
+  return `In a ${timeframe}, ${formatNumber(
+    queries
+  )} AI queries emit ${formatNumber(totalCO2)} tons of CO₂ (${formatNumber(
+    carsPerYear
+  )} cars/year), use ${formatNumber(
+    totalWater
+  )}M liters of water (${formatNumber(
+    peopleWaterPerDay
+  )} people/day), and consume ${totalEnergy.toFixed(
+    1
+  )} GWh of energy (powers ${formatNumber(homesPerDay)} homes/day).`;
+}

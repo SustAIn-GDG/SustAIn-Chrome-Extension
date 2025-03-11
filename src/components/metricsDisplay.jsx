@@ -1,7 +1,19 @@
 import MetricCard from "./metricCard";
-import { mapMetricToAnalogy } from "../utils/utils";
+import { mapMetricToAnalogy, extrapolateMetrics } from "../utils/utils";
 
 const MetricsDisplay = ({ siteIcon }) => {
+  // Current metrics values from the conversation
+  const currentCO2 = 0.1; // in kg
+  const currentWater = 1.5; // in liters
+  const currentEnergy = 75; // in Wh
+
+  // Generate the extrapolation paragraph
+  const extrapolationText = extrapolateMetrics(
+    currentCO2,
+    currentWater,
+    currentEnergy
+  );
+
   return (
     <section className="flex relative flex-col self-center pt-4 pb-3 mt-3 w-full rounded-2xl bg-white bg-opacity-90 shadow-lg max-w-[320px] border border-gray-100">
       <div className="flex gap-2 justify-center items-center self-center mb-2 text-base font-medium">
@@ -46,29 +58,27 @@ const MetricsDisplay = ({ siteIcon }) => {
       <div className="overflow-hidden py-2 w-full space-y-5">
         <MetricCard
           icon="/assets/co2.png"
-          value="2.5 kg CO₂"
-          description={mapMetricToAnalogy("co2", 2.5)}
+          value={`${currentCO2} kg CO₂`}
+          description={mapMetricToAnalogy("co2", currentCO2)}
           gradientBackground="bg-gradient-to-br from-green-50 to-green-200"
         />
         <MetricCard
           icon="/assets/water.png"
-          value="1200 liters"
-          description={mapMetricToAnalogy("water", 1200)}
+          value={`${currentWater} liters`}
+          description={mapMetricToAnalogy("water", currentWater)}
           gradientBackground="bg-gradient-to-br from-blue-50 to-blue-200"
         />
         <MetricCard
           icon="/assets/energy.png"
-          value="80000 Wh (80 kWh)"
-          description={mapMetricToAnalogy("energy", 80000)}
+          value={`${currentEnergy} Wh (${currentEnergy / 1000} kWh)`}
+          description={mapMetricToAnalogy("energy", currentEnergy)}
           gradientBackground="bg-gradient-to-br from-amber-50 to-amber-200"
         />
       </div>
 
       <div className="flex flex-col px-4 mt-2">
         <p className="px-3 py-2.5 text-xs leading-relaxed rounded-xl bg-gray-100 text-gray-700">
-          In a day, 10M AI queries emit 4,500 tons of CO₂ (900 cars/year), use
-          25M liters of water (35,000 people/year), and consume 1.5 GWh of
-          energy (powers 50,000 homes/day).
+          {extrapolationText}
         </p>
         <button className="self-start mt-3 text-xs text-green-600 hover:text-green-800 font-medium transition-colors flex items-center gap-1">
           <svg
