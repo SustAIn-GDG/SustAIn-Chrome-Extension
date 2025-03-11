@@ -11,7 +11,7 @@ import Header from "./components/header";
 import MetricsDisplay from "./components/metricsDisplay";
 import Footer from "./components/footer";
 
-function Popup() {
+export default function Popup() {
   const [conversationId, setConversationId] = useState(null);
   const [co2, setCo2] = useState(null);
   const [water, setWater] = useState(null);
@@ -46,7 +46,7 @@ function Popup() {
   }, []);
 
   return (
-    <main className="overflow-hidden text-black bg-white w-[400px] max-w-[400px]">
+    <main className="overflow-hidden text-black bg-white w-[300px] max-w-[300px]">
       <div className="flex relative flex-col w-full aspect-[0.576]">
         <img
           src="https://cdn.builder.io/api/v1/image/assets/TEMP/a451c8ccf732a92ae7722c4ede7f8115e22b11d9b8212f5a2288f82bb9b48fe8?placeholderIfAbsent=true"
@@ -61,5 +61,3 @@ function Popup() {
     </main>
   );
 }
-
-export default Popup;
