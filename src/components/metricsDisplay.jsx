@@ -1,7 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import MetricCard from "./metricCard";
 import { mapMetricToAnalogy, extrapolateMetrics } from "../utils/utils";
 
-const MetricsDisplay = ({ siteIcon }) => {
+const MetricsDisplay = ({ siteIcon, conversationID }) => {
   // Current metrics values from the conversation
   const currentCO2 = 0.1; // in kg
   const currentWater = 1.5; // in liters
@@ -13,6 +16,8 @@ const MetricsDisplay = ({ siteIcon }) => {
     currentWater,
     currentEnergy
   );
+
+  const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <section className="flex relative flex-col self-center pt-4 pb-3 mt-3 w-full rounded-2xl bg-white bg-opacity-90 shadow-lg max-w-[320px] border border-gray-100">
@@ -36,23 +41,49 @@ const MetricsDisplay = ({ siteIcon }) => {
         <h2 className="self-stretch my-auto w-[210px] font-semibold text-gray-800">
           Current Conversation Usage
         </h2>
-        <button className="text-gray-500 hover:text-gray-700 transition-colors">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <div className="relative inline-block">
+          <button
+            className="text-gray-500 hover:text-gray-700 transition-colors"
+            onClick={() => setShowTooltip(!showTooltip)}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
           >
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+          </button>
+
+          {/* Tooltip */}
+          {showTooltip && (
+            <div className="absolute top-8 right-0 whitespace-nowrap bg-gray-800 text-white text-xs rounded-md py-1 px-2 shadow-md z-10">
+              {conversationID ? (
+                <span>
+                  Conversation ID:{" "}
+                  <span className="font-semibold">
+                    {`${conversationID.slice(0, 6)}...${conversationID.slice(
+                      -4
+                    )}`}
+                  </span>
+                </span>
+              ) : (
+                <span>Conversation ID not found</span>
+              )}
+              <div className="absolute right-4 -top-1.5 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-800"></div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="overflow-hidden py-2 w-full space-y-5">

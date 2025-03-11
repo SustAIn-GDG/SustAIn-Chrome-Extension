@@ -55,7 +55,10 @@ export default function Popup() {
         <div className="relative z-10 flex flex-col h-full">
           <Header />
           <div className="flex-1 flex items-center justify-center">
-            <MetricsDisplay siteIcon={siteIcon} />
+            <MetricsDisplay
+              siteIcon={siteIcon}
+              conversationID={conversationId}
+            />
           </div>
           <Footer />
         </div>
