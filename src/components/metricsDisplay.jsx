@@ -1,13 +1,25 @@
 import MetricCard from "./metricCard";
 
-const MetricsDisplay = () => {
+const MetricsDisplay = ({ siteIcon }) => {
   return (
     <section className="flex relative flex-col self-center pt-4 pb-3 mt-6 w-full rounded-2xl bg-white bg-opacity-90 shadow-lg max-w-[320px] border border-gray-100">
       <div className="flex gap-2 justify-center items-center self-center mb-2 text-base font-medium">
         <div
-          className="flex shrink-0 self-stretch my-auto bg-green-500 h-[20px] rounded-full w-[20px]"
+          className="flex shrink-0 self-stretch my-auto h-[32px] w-[32px] rounded-full overflow-hidden"
           aria-hidden="true"
-        />
+        >
+          {siteIcon ? (
+            <img
+              src={siteIcon}
+              alt="Site Icon"
+              className="object-cover w-full h-full"
+            />
+          ) : (
+            <span className="flex items-center justify-center w-full h-full text-white">
+              🤖
+            </span>
+          )}
+        </div>
         <h2 className="self-stretch my-auto w-[210px] font-semibold text-gray-800">
           Current Conversation Usage
         </h2>

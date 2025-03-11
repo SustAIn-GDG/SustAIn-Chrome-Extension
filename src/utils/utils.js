@@ -72,3 +72,17 @@ export function deleteConversationFromStorage(conversationId) {
     }
   });
 }
+
+export function getSiteIcon(url) {
+  if (url.hostname.includes("chatgpt.com")) {
+    return "/assets/chatgpt.png";
+  } else if (url.hostname.includes("gemini.google.com")) {
+    return "/assets/gemini.png";
+  } else if (
+    url.hostname.includes("cloud.google.com") &&
+    url.pathname.includes("vertex-ai")
+  ) {
+    return "/assets/vertexai.png";
+  }
+  return "unknown";
+}

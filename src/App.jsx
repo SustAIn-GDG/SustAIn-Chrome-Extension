@@ -6,6 +6,7 @@ import {
   fetchConversationFromStorage,
   getConversationId,
   simulateBackend,
+  getSiteIcon, // IMPORT HERE
 } from "./utils/utils";
 
 export default function Popup() {
@@ -13,6 +14,7 @@ export default function Popup() {
   const [co2, setCo2] = useState(null);
   const [water, setWater] = useState(null);
   const [energy, setEnergy] = useState(null);
+  const [siteIcon, setSiteIcon] = useState(null); // Add state for site icon
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -32,8 +34,10 @@ export default function Popup() {
 
       setConversationId(conversationId);
 
+      // Get the site icon based on URL
+      setSiteIcon(getSiteIcon(url));
+
       fetchConversationFromStorage(conversationId, (conversationData) => {
-        // sendConversationToBackend(conversationData, conversationId);
         const res = simulateBackend(conversationData, conversationId);
         setCo2(res.CO2);
         setWater(res.Water);
@@ -58,7 +62,7 @@ export default function Popup() {
         <div className="relative z-10 flex flex-col h-full">
           <Header />
           <div className="flex-1 flex items-center justify-center">
-            <MetricsDisplay />
+            <MetricsDisplay siteIcon={siteIcon} />
           </div>
           <Footer />
         </div>
