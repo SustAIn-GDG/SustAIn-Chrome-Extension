@@ -1,3 +1,5 @@
+import { co2analogies, wateranalogies, energyanalogies } from "./analogies";
+
 export function getConversationId(url) {
   let conversationId = null;
   let supportedSite = false;
@@ -111,4 +113,95 @@ export function animateCount(targetValue, setValue, duration = 1500) {
   };
 
   requestAnimationFrame(updateCount);
+}
+
+export function mapMetricToAnalogy(type, value) {
+  // Format number with appropriate units and scale
+  function formatNumber(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "k";
+    return num.toFixed(1);
+  }
+
+  switch (type) {
+    case "co2": {
+      const analogies = co2analogies;
+
+      for (const analogy of analogies) {
+        if (value <= analogy.threshold) {
+          const quantity = value / analogy.factor;
+          let result = analogy.desc.replace(
+            "%v",
+            quantity.toFixed(quantity < 1 ? 1 : 1)
+          );
+
+          if (analogy.desc.includes("h")) {
+            result = analogy.desc.replace("%v", quantity.toFixed(1));
+          }
+
+          return `${analogy.item}: ${result}`;
+        }
+      }
+
+      const lastAnalogy = analogies[analogies.length - 1];
+      const quantity = value / lastAnalogy.factor;
+      return `${lastAnalogy.item}: ${lastAnalogy.desc.replace(
+        "%v",
+        quantity.toFixed(1)
+      )}`;
+    }
+
+    case "water": {
+      const analogies = wateranalogies;
+
+      for (const analogy of analogies) {
+        if (value <= analogy.threshold) {
+          const quantity = value / analogy.factor;
+          if (quantity < 0.1) {
+            return `${analogy.item}: ${
+              Math.round(10 / quantity) / 10
+            } times smaller`;
+          } else {
+            return `${analogy.item}: ${quantity.toFixed(
+              quantity < 1 ? 1 : 1
+            )} ${analogy.desc.replace("%v", "")}`;
+          }
+        }
+      }
+
+      const lastAnalogy = analogies[analogies.length - 1];
+      const quantity = value / lastAnalogy.factor;
+      return `${lastAnalogy.item}: ${quantity.toFixed(
+        1
+      )} ${lastAnalogy.desc.replace("%v", "")}`;
+    }
+
+    case "energy": {
+      const analogies = energyanalogies;
+
+      for (const analogy of analogies) {
+        if (value <= analogy.threshold) {
+          const quantity = value / analogy.factor;
+          if (quantity < 0.1) {
+            return `${analogy.item}: ${
+              Math.round(10 / quantity) / 10
+            } times smaller`;
+          } else {
+            return `${analogy.item}: ${quantity.toFixed(
+              quantity < 1 ? 1 : 1
+            )} ${analogy.desc.replace("%v", "")}`;
+          }
+        }
+      }
+
+      const lastAnalogy = analogies[analogies.length - 1];
+      const quantity = value / lastAnalogy.factor;
+      return `${lastAnalogy.item}: ${quantity.toFixed(
+        1
+      )} ${lastAnalogy.desc.replace("%v", "")}`;
+    }
+
+    default:
+      return "No analogy available";
+  }
 }

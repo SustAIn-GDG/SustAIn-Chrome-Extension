@@ -1,4 +1,5 @@
 import MetricCard from "./metricCard";
+import { mapMetricToAnalogy } from "../utils/utils";
 
 const MetricsDisplay = ({ siteIcon }) => {
   return (
@@ -46,19 +47,19 @@ const MetricsDisplay = ({ siteIcon }) => {
         <MetricCard
           icon="/assets/co2.png"
           value="2.5 kg CO₂"
-          description="🚗 Like driving a petrol car for ~12 km"
+          description={mapMetricToAnalogy("co2", 2.5)}
           gradientBackground="bg-gradient-to-br from-green-50 to-green-200"
         />
         <MetricCard
           icon="/assets/water.png"
-          value="12 liters"
-          description="🚿 About a 4-minute shower."
+          value="1200 liters"
+          description={mapMetricToAnalogy("water", 1200)}
           gradientBackground="bg-gradient-to-br from-blue-50 to-blue-200"
         />
         <MetricCard
           icon="/assets/energy.png"
-          value="800 Wh (0.8 kWh)"
-          description="🔋 Enough to run a laptop for ~16 hours."
+          value="80000 Wh (80 kWh)"
+          description={mapMetricToAnalogy("energy", 80000)}
           gradientBackground="bg-gradient-to-br from-amber-50 to-amber-200"
         />
       </div>
