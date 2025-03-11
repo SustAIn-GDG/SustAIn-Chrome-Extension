@@ -5,14 +5,14 @@ const Header = () => {
         <img
           src="/assets/logo_gdg.png"
           alt="SustAIn Logo"
-          className="object-contain shrink-0 self-stretch my-auto aspect-square w-[48px]"
+          className="object-contain shrink-0 self-stretch my-auto aspect-square w-[42px]"
           aria-label="SustAIn Logo"
         />
         <div className="flex flex-col justify-center self-stretch my-auto">
-          <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+          <h1 className="text-lg font-bold text-gray-800 tracking-tight">
             SustAIn
           </h1>
-          <p className="text-sm text-gray-600 mt-0.5">
+          <p className="text-xs text-gray-600 mt-0.5">
             Know your Impact, Make a Difference
           </p>
         </div>

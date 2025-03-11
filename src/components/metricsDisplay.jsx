@@ -2,7 +2,7 @@ import MetricCard from "./metricCard";
 
 const MetricsDisplay = ({ siteIcon }) => {
   return (
-    <section className="flex relative flex-col self-center pt-4 pb-3 mt-6 w-full rounded-2xl bg-white bg-opacity-90 shadow-lg max-w-[320px] border border-gray-100">
+    <section className="flex relative flex-col self-center pt-4 pb-3 mt-3 w-full rounded-2xl bg-white bg-opacity-90 shadow-lg max-w-[320px] border border-gray-100">
       <div className="flex gap-2 justify-center items-center self-center mb-2 text-base font-medium">
         <div
           className="flex shrink-0 self-stretch my-auto h-[32px] w-[32px] rounded-full overflow-hidden"

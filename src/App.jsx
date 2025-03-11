@@ -6,7 +6,7 @@ import {
   fetchConversationFromStorage,
   getConversationId,
   simulateBackend,
-  getSiteIcon, // IMPORT HERE
+  getSiteIcon,
 } from "./utils/utils";
 
 export default function Popup() {
@@ -14,7 +14,7 @@ export default function Popup() {
   const [co2, setCo2] = useState(null);
   const [water, setWater] = useState(null);
   const [energy, setEnergy] = useState(null);
-  const [siteIcon, setSiteIcon] = useState(null); // Add state for site icon
+  const [siteIcon, setSiteIcon] = useState(null);
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
@@ -28,7 +28,7 @@ export default function Popup() {
       const { conversationId, supportedSite } = getConversationId(url);
 
       if (!supportedSite) {
-        console.error("Unsupported site or invalid conversation ID.");
+        console.log("Unsupported site or invalid conversation ID.");
         return;
       }
 
@@ -48,16 +48,9 @@ export default function Popup() {
 
   return (
     <main className="overflow-hidden text-black bg-white w-[360px] max-w-[360px] font-sans">
-      <div className="flex relative flex-col w-full min-h-[480px]">
-        <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
-          <img
-            src="/assets/background.png"
-            alt="Background"
-            className="object-cover w-full h-full opacity-80 filter blur-[1px]"
-            aria-hidden="true"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-white/70"></div>
-        </div>
+      <div className="flex relative flex-col w-full">
+        {/* Green Gradient Background */}
+        <div className="absolute inset-0 w-full h-full overflow-hidden z-0 bg-gradient-to-b from-teal-300 to-teal-400" />
 
         <div className="relative z-10 flex flex-col h-full">
           <Header />

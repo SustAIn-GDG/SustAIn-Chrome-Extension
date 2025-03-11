@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { animateCount } from "../utils/utils";
 
 const MetricCard = ({
   icon,
@@ -9,7 +10,6 @@ const MetricCard = ({
   const [count, setCount] = useState(0);
   const [unit, setUnit] = useState("");
   const countRef = useRef(null);
-  const duration = 1500; // animation duration in ms
 
   useEffect(() => {
     // Parse the numeric value and unit
@@ -18,28 +18,8 @@ const MetricCard = ({
       const targetValue = parseFloat(match[1]);
       setUnit(match[2]);
 
-      // Start the animation
-      const startTime = Date.now();
-      const startValue = 0;
-
-      const updateCount = () => {
-        const now = Date.now();
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        // Easing function for smoother animation
-        const easeOutQuad = (t) => t * (2 - t);
-        const currentValue =
-          startValue + easeOutQuad(progress) * (targetValue - startValue);
-
-        setCount(currentValue);
-
-        if (progress < 1) {
-          countRef.current = requestAnimationFrame(updateCount);
-        }
-      };
-
-      countRef.current = requestAnimationFrame(updateCount);
+      // Start the count-up animation
+      animateCount(targetValue, setCount);
     }
 
     return () => {
@@ -51,32 +31,32 @@ const MetricCard = ({
 
   return (
     <article
-      className="flex gap-3 items-center px-4 w-full transition-all duration-200 hover:translate-x-1"
+      className="flex gap-3 items-center px-4 w-full transition-all duration-200 hover:translate-x-1 select-none"
       tabIndex={0}
       aria-label={`${value} - ${description}`}
     >
       <div
-        className={`rounded-2xl ${gradientBackground} p-3.5 shadow-md`}
+        className={`rounded-2xl ${gradientBackground} p-3 shadow-md`}
         aria-hidden="true"
       >
         {typeof icon === "string" ? (
           <img
             src={icon}
             alt=""
-            className="object-contain shrink-0 my-auto w-14 h-14 rounded-none"
+            className="object-contain shrink-0 my-auto w-10 h-10 rounded-none"
             aria-hidden="true"
           />
         ) : (
-          <div className="shrink-0 my-auto w-14 h-14 flex items-center justify-center">
+          <div className="shrink-0 my-auto w-10 h-10 flex items-center justify-center">
             {icon}
           </div>
         )}
       </div>
       <div className="self-stretch pt-2 pb-1 my-auto min-h-[64px] w-[170px]">
-        <h3 className="text-lg font-bold tracking-tight">
+        <h3 className="text-[16px] font-bold tracking-tight">
           {count.toFixed(1)} {unit}
         </h3>
-        <p className="mt-1.5 text-sm leading-snug text-gray-800">
+        <p className="mt-1.5 text-xs leading-snug text-gray-800">
           {description}
         </p>
       </div>

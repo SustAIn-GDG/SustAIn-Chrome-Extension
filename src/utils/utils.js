@@ -1,8 +1,9 @@
 export function getConversationId(url) {
   let conversationId = null;
   let supportedSite = false;
-
+  console.log("URL of the site:", url);
   const pathSegments = url.pathname.split("/");
+  console.log("Path segments:", pathSegments);
 
   if (url.hostname.includes("chatgpt.com")) {
     if (pathSegments.length >= 3 && pathSegments[1] === "c") {
@@ -10,7 +11,7 @@ export function getConversationId(url) {
       supportedSite = true;
     }
   } else if (url.hostname.includes("gemini.google.com")) {
-    if (pathSegments.length >= 3 && pathSegments[1] === "app") {
+    if (pathSegments[1] === "app") {
       conversationId = "c_" + pathSegments[2].split("?")[0]; // Extract Gemini conversation ID
       supportedSite = true;
     }
@@ -74,9 +75,10 @@ export function deleteConversationFromStorage(conversationId) {
 }
 
 export function getSiteIcon(url) {
+  console.log("URL in getSiteIcon:", url);
   if (url.hostname.includes("chatgpt.com")) {
     return "/assets/chatgpt.png";
-  } else if (url.hostname.includes("gemini.google.com")) {
+  } else if (url.hostname.includes("gemini")) {
     return "/assets/gemini.png";
   } else if (
     url.hostname.includes("cloud.google.com") &&
@@ -85,4 +87,28 @@ export function getSiteIcon(url) {
     return "/assets/vertexai.png";
   }
   return "unknown";
+}
+
+export function animateCount(targetValue, setValue, duration = 1500) {
+  const startTime = Date.now();
+  const startValue = 0;
+
+  const easeOutQuad = (t) => t * (2 - t);
+
+  const updateCount = () => {
+    const now = Date.now();
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    const currentValue =
+      startValue + easeOutQuad(progress) * (targetValue - startValue);
+
+    setValue(currentValue);
+
+    if (progress < 1) {
+      requestAnimationFrame(updateCount);
+    }
+  };
+
+  requestAnimationFrame(updateCount);
 }
