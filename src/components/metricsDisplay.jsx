@@ -21,22 +21,25 @@ const MetricsDisplay = () => {
 
       <div className="overflow-hidden py-3 mt-2 w-full">
         <MetricCard
-          icon="https://cdn.builder.io/api/v1/image/assets/TEMP/28b9ad4693f9272fbbd05404ace5680f3ea76a9a66371589f58c23eff40841d6?placeholderIfAbsent=true"
+          icon="/assets/co2.png"
           value="2.5 kg CO₂"
           description="🚗 Like driving a petrol car for ~12 km"
+          gradientBackground="bg-gradient-to-br from-[#D8E2C6] to-[#A4B494]"
         />
         <div className="mt-4.5">
           <MetricCard
-            icon="https://cdn.builder.io/api/v1/image/assets/TEMP/ccfd2651618c2cc29b98fa5100f0bc79d80c59b4718979f4d146c6ddeb2b62c8?placeholderIfAbsent=true"
+            icon="/assets/water.png"
             value="12 liters"
             description="🚿 About a 4-minute shower."
+            gradientBackground="bg-gradient-to-br from-[#C9D6DF] to-[#8FA6C6]"
           />
         </div>
         <div className="mt-4.5">
           <MetricCard
-            icon="https://cdn.builder.io/api/v1/image/assets/TEMP/4d8418c992bc0945f7da99330cf148cfa70da135f3bad77b579e763290f76013?placeholderIfAbsent=true"
+            icon="/assets/energy.png"
             value="800 Wh (0.8 kWh)"
             description="🔋 Enough to run a laptop for ~16 hours."
+            gradientBackground="bg-gradient-to-br from-[#E6D7C3] to-[#C4A484]"
           />
         </div>
       </div>
