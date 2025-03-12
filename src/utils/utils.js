@@ -22,19 +22,43 @@ export function getConversationId(url) {
   return { conversationId, supportedSite };
 }
 
+/* conversationMetrics will be a object with structure:
+  {
+    CarbonEmission: Number,
+    EnergyConsumption: Number,
+    WaterConsumption: Number,
+  }
+*/
 export function saveConversationToBrowserStorage(
   conversationId,
-  conversationData
+  conversationMetrics
 ) {
   try {
     // Get existing conversations or initialize empty object
     const existingData = localStorage.getItem("sustAIn_conversations");
+    console.log("Data from local storage", existingData, conversationMetrics);
     const conversations = existingData ? JSON.parse(existingData) : {};
 
-    // Add/update the conversation
-    conversations[conversationId] = conversationData;
+    if (conversations.hasOwnProperty(conversationId)) {
+      // Update existing metrics by adding the new values
+      conversations[conversationId].CarbonEmission =
+        Number(conversations[conversationId].CarbonEmission) +
+        Number(conversationMetrics.CarbonEmission);
+      conversations[conversationId].EnergyConsumption =
+        Number(conversations[conversationId].EnergyConsumption) +
+        Number(conversationMetrics.EnergyConsumption);
+      conversations[conversationId].WaterConsumption =
+        Number(conversations[conversationId].WaterConsumption) +
+        Number(conversationMetrics.WaterConsumption);
+    } else {
+      // Add as new entry if not present
+      conversations[conversationId] = {
+        CarbonEmission: Number(conversationMetrics.CarbonEmission),
+        EnergyConsumption: Number(conversationMetrics.EnergyConsumption),
+        WaterConsumption: Number(conversationMetrics.WaterConsumption),
+      };
+    }
 
-    // Save back to localStorage
     localStorage.setItem(
       "sustAIn_conversations",
       JSON.stringify(conversations)
@@ -45,68 +69,49 @@ export function saveConversationToBrowserStorage(
   }
 }
 
-export function fetchConversationFromStorage(conversationId, callback) {
-  // First try to get from chrome.storage (extension storage)
-  chrome.storage.local.get("conversations", function (result) {
-    if (result.conversations && result.conversations[conversationId]) {
-      const conversationData = {
-        [conversationId]: result.conversations[conversationId],
-      };
+export function getConversationMetricsFromBrowserStorage(conversationId) {
+  try {
+    // Get existing conversations from localStorage
+    const existingData = localStorage.getItem("sustAIn_conversations");
+    const conversations = existingData ? JSON.parse(existingData) : {};
 
-      // Also save to browser localStorage for persistence
-      saveConversationToBrowserStorage(
-        conversationId,
-        result.conversations[conversationId]
-      );
-
-      callback(conversationData);
-    } else {
-      console.log(
-        "Conversation not found in extension storage, checking browser localStorage..."
-      );
-
-      // If not in chrome.storage, try to get from browser localStorage
-      try {
-        const localData = localStorage.getItem("sustAIn_conversations");
-        if (localData) {
-          const parsedData = JSON.parse(localData);
-          if (parsedData && parsedData[conversationId]) {
-            console.log(
-              "Found conversation in browser localStorage:",
-              conversationId
-            );
-            callback({ [conversationId]: parsedData[conversationId] });
-
-            // Sync back to chrome.storage for future use
-            chrome.storage.local.get("conversations", function (chromeResult) {
-              const conversations = chromeResult.conversations || {};
-              conversations[conversationId] = parsedData[conversationId];
-              chrome.storage.local.set({ conversations }, function () {
-                console.log(
-                  "Synced conversation from localStorage to chrome.storage"
-                );
-              });
-            });
-
-            return;
-          }
-        }
-
-        console.error(
-          "Conversation not found in any storage for ID:",
-          conversationId
-        );
-        callback(null);
-      } catch (error) {
-        console.error("Error accessing browser localStorage:", error);
-        callback(null);
-      }
+    // Check if conversationId exists
+    if (!conversations.hasOwnProperty(conversationId)) {
+      console.warn(`Conversation ID '${conversationId}' not found.`);
+      return null;
     }
+
+    console.log(
+      "Retrieved conversation metrics:",
+      conversations[conversationId]
+    );
+    return conversations[conversationId];
+  } catch (error) {
+    console.error("Error retrieving from browser localStorage:", error);
+    return null;
+  }
+}
+
+export function fetchConversationFromChromeStorage(conversationId) {
+  // First try to get the conversations from chrome.storage (extension storage)
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get("conversations", function (result) {
+      console.log("Result:", result);
+      let conversations = result.conversations;
+      if (conversations && conversations[conversationId]) {
+        resolve({ [conversationId]: conversations[conversationId] });
+      } else {
+        resolve(null);
+      }
+    });
   });
 }
 
-export function sendConversationToBackend(conversationData, conversationId) {
-  return fetch("http://localhost:8080/calculate_metrics", {
+export async function sendConversationToBackend(
+  conversationData,
+  conversationId
+) {
+  return await fetch("http://localhost:8080/calculate_metrics", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -121,8 +126,8 @@ export function sendConversationToBackend(conversationData, conversationId) {
       return response.json();
     })
     .then((data) => {
-      console.log("Data sent successfully:", data);
-      deleteConversationFromStorage(conversationId);
+      console.log("Data recieved successfully:", data);
+      deleteConversationFromChromeStorage(conversationId);
       return data;
     })
     .catch((error) => {
@@ -131,7 +136,7 @@ export function sendConversationToBackend(conversationData, conversationId) {
     });
 }
 
-export function deleteConversationFromStorage(conversationId) {
+export function deleteConversationFromChromeStorage(conversationId) {
   // Delete from chrome.storage
   chrome.storage.local.get("conversations", function (result) {
     if (result.conversations) {
@@ -148,27 +153,6 @@ export function deleteConversationFromStorage(conversationId) {
       );
     }
   });
-
-  // Also delete from browser localStorage
-  try {
-    const localData = localStorage.getItem("sustAIn_conversations");
-    if (localData) {
-      const parsedData = JSON.parse(localData);
-      if (parsedData && parsedData[conversationId]) {
-        delete parsedData[conversationId];
-        localStorage.setItem(
-          "sustAIn_conversations",
-          JSON.stringify(parsedData)
-        );
-        console.log(
-          "Deleted conversation from browser localStorage:",
-          conversationId
-        );
-      }
-    }
-  } catch (error) {
-    console.error("Error deleting from browser localStorage:", error);
-  }
 }
 
 // Rest of your utility functions remain unchanged

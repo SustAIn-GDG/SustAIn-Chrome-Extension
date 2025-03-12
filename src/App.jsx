@@ -4,9 +4,11 @@ import AnimatedLoader from "./components/animatedLoader";
 import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
 import {
-  fetchConversationFromStorage,
+  fetchConversationFromChromeStorage,
   getConversationId,
+  getConversationMetricsFromBrowserStorage,
   getSiteIcon,
+  saveConversationToBrowserStorage,
   sendConversationToBackend,
 } from "./utils/utils";
 
@@ -44,31 +46,54 @@ export default function Popup() {
         setSiteIcon(getSiteIcon(url));
 
         // Fetch conversation data
-        fetchConversationFromStorage(
-          conversationId,
-          async (conversationData) => {
-            if (!conversationData) {
-              throw new Error("No conversation data found.");
-            }
+        const conversation = await fetchConversationFromChromeStorage(conversationId);
 
-            try {
-              const res = await sendConversationToBackend(
-                conversationData,
-                conversationId
-              );
-
-              console.log("Metrics received:", res);
-
-              setCo2(res.CarbonEmission);
-              setWater(res.WaterConsumption);
-              setEnergy(res.EnergyConsumption);
-              setIsLoading(false);
-            } catch (err) {
-              console.error("Error sending data:", err);
-              setIsLoading(false);
-            }
+        if (!conversation) {
+          console.log(
+            "Conversation ID not found in extension storage...So returning metrics from local storage", conversation
+          );
+          const metrics =
+            getConversationMetricsFromBrowserStorage(conversationId);
+          if (metrics == null) {
+            console.error("Conversatiom metrics not found in browser storage!");
+            setIsLoading(false);
+            // TODO: In this scenario, we should prompt the user to continue chating with the application and click again.
+            return;
           }
-        );
+          setCo2(metrics.CarbonEmission);
+          setWater(metrics.WaterConsumption);
+          setEnergy(metrics.EnergyConsumption);
+          console.log("Metrics retrived from browser storage :)");
+          setIsLoading(false);
+          return;
+        }
+        try {
+          const res = await sendConversationToBackend(
+            conversation,
+            conversationId
+          );
+
+          console.log("Metrics received:", res);
+          saveConversationToBrowserStorage(conversationId, res);
+          setTimeout(() => {
+            const metrics =
+              getConversationMetricsFromBrowserStorage(conversationId);
+            if (metrics == null) {
+              console.error(
+                "Conversatiom metrics not found in browser storage!"
+              );
+              return;
+            }
+            setCo2(metrics.CarbonEmission);
+            setWater(metrics.WaterConsumption);
+            setEnergy(metrics.EnergyConsumption);
+            console.log("Metrics retrived from browser storage :)");
+            setIsLoading(false);
+          }, 1000);
+        } catch (err) {
+          console.error("Error sending data:", err);
+          setIsLoading(false);
+        }
       } catch (err) {
         console.error("Error fetching data:", err);
         setIsLoading(false);
