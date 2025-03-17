@@ -111,7 +111,7 @@ export async function sendConversationToBackend(
   conversationData,
   conversationId
 ) {
-  return await fetch("http://localhost:8080/calculate_metrics", {
+  return await fetch("https://sust-ai-n-backend-musgit6is-thanus-kumaars-projects.vercel.app/calculate_metrics", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
