@@ -120,7 +120,15 @@ const MetricsDisplay = ({
         <p className="px-3 py-2.5 text-xs leading-relaxed rounded-xl bg-gray-100 text-gray-700">
           {extrapolationText}
         </p>
-        <button className="self-start mt-3 text-xs text-green-600 hover:text-green-800 font-medium transition-colors flex items-center gap-1">
+        <button
+          className="self-start mt-3 text-xs text-green-600 hover:text-green-800 font-medium transition-colors flex items-center gap-1"
+          onClick={() =>
+            window.open(
+              "https://sustain-gdg.github.io/Documentation/",
+              "_blank"
+            )
+          }
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="12"

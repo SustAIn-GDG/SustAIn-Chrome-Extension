@@ -46,11 +46,14 @@ export default function Popup() {
         setSiteIcon(getSiteIcon(url));
 
         // Fetch conversation data
-        const conversation = await fetchConversationFromChromeStorage(conversationId);
+        const conversation = await fetchConversationFromChromeStorage(
+          conversationId
+        );
 
         if (!conversation) {
           console.log(
-            "Conversation ID not found in extension storage...So returning metrics from local storage", conversation
+            "Conversation ID not found in extension storage...So returning metrics from local storage",
+            conversation
           );
           const metrics =
             getConversationMetricsFromBrowserStorage(conversationId);
@@ -127,13 +130,12 @@ export default function Popup() {
               <div className="bg-teal-50 p-3 rounded-md border border-teal-200 mt-1">
                 <p className="font-medium text-teal-700">To get started:</p>
                 <p className="mt-1 text-teal-600">
-                  Visit an AI chat platform like ChatGPT, Claude, or Bard and
-                  start a conversation.
+                  Visit an AI chat platform like ChatGPT or Gemini and start a
+                  conversation.
                 </p>
               </div>
               <p className="text-xs text-gray-500 mt-3">
-                Currently supporting ChatGPT, Claude, Bard, and other popular AI
-                assistants.
+                Currently supporting ChatGPT, Gemini and Google AI Studio.
               </p>
             </div>
           ) : (
