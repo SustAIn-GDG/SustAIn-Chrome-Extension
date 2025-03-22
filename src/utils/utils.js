@@ -111,7 +111,7 @@ export async function sendConversationToBackend(
   conversationData,
   conversationId
 ) {
-  return await fetch("https://sust-ai-n-backend-f7t69cf5v-thanus-kumaars-projects.vercel.app/calculate_metrics", {
+  return await fetch("https://sustain-backend-xb7t.onrender.com/calculate_metrics", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

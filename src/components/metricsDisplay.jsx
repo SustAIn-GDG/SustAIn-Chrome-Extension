@@ -121,7 +121,7 @@ const MetricsDisplay = ({
           {extrapolationText}
         </p>
         <button
-          className="self-start mt-3 text-xs text-green-600 hover:text-green-800 font-medium transition-colors flex items-center gap-1"
+          className="self-start mt-3 text-xs text-green-600 hover:text-green-800 font-medium transition-colors flex items-center gap-1 cursor-pointer"
           onClick={() =>
             window.open(
               "https://sustain-gdg.github.io/Documentation/",
