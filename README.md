@@ -37,17 +37,20 @@ The project includes:
 
 ## 🧭 Project Workflow Diagram
 
-The following diagram outlines the overall system architecture and component interactions:
-
 ![workflow diagram](https://github.com/user-attachments/assets/32289700-86c4-43fe-8faf-91b24bfd34a8)
 
+## 🧭 Project Architecture Diagram
 
-> ⚙️ The diagram captures:
+The following diagram outlines the overall system architecture and component interactions:
+
+![Architecture Diagram](https://github.com/user-attachments/assets/584fd6e6-6d34-4669-b32e-1b3dfbb84815)
+
+
+> The diagram captures:
 > - How browser extension and React components interact with the backend
 > - Data preprocessing and classification pipeline on GCP
 > - API integrations with Electricity Maps, IP-API, and TimeAPI
 > - Model training via AutoML and deployment via Vertex AI
-
 
 ## 🧰 Tech Stack
 
