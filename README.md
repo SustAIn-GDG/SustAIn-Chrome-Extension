@@ -2,13 +2,10 @@
 
 **A Chrome extension and reusable React component library that provides real-time sustainability metrics while using websites powered by generative AI.**
 
----
-
 > 🌍 **"As the world races toward AI integration, the invisible environmental cost of generative AI remains overlooked."**  
 > This project was born out of the urgent need to make sustainability transparent—empowering users and developers to understand, measure, and reduce their carbon footprint while using AI tools.  
 > By revealing the environmental metrics behind every query, we are not just building technology—we are fostering responsible innovation. ⚡
 
----
 
 ## 🚀 Overview
 
@@ -19,7 +16,6 @@ The project includes:
 - A **Chrome Extension** that overlays sustainability insights while users interact with AI services.
 - A **React Component Library** (built with TypeScript) that can be integrated into other platforms for sustainability tracking.
 
----
 
 ## ✨ Features
 
@@ -31,7 +27,6 @@ The project includes:
 - 🧩 Chrome extension to monitor sustainability directly in the browser.
 - 📦 Reusable and type-safe React components (published to npm).
 
----
 
 ## 🌍 Impact & Use Cases
 
@@ -39,7 +34,6 @@ The project includes:
 - Helps organizations measure their AI-driven digital sustainability.
 - Serves researchers looking to evaluate energy efficiency of AI services.
 
----
 
 ## 🧭 Project Workflow Diagram
 
@@ -54,7 +48,6 @@ The following diagram outlines the overall system architecture and component int
 > - API integrations with Electricity Maps, IP-API, and TimeAPI
 > - Model training via AutoML and deployment via Vertex AI
 
----
 
 ## 🧰 Tech Stack
 
@@ -67,7 +60,6 @@ The following diagram outlines the overall system architecture and component int
 | External APIs   | Electricity Maps, IP-API, TimeAPI                                            |
 | DevOps & Hosting| Google Cloud Platform (GCP), npm (for component publishing)                  |
 
----
 
 ## 📦 Related Repositories
 
@@ -78,8 +70,6 @@ The following diagram outlines the overall system architecture and component int
 | **Documentation**                      | Complete project documentation repo             | [GitHub Link](https://github.com/SustAIn-GDG/Documentation) |
 | **SustAIn-AI-model-experiment**        | Dataset synthesis and aggregation               | [GitHub Link](https://github.com/SustAIn-GDG/SustAIn-AI-model-experiment) |
 
-
----
 
 ## 🔮 Future Enhancements
 
@@ -96,15 +86,14 @@ To maximize the reach and impact of our sustainability insights, we plan to exte
 
 These future directions aim to embed sustainability awareness natively into AI usage workflows—empowering both end-users and technical teams to make environmentally responsible choices.
 
----
 
 ## 👥 Team
 
 - **Thanus Kumaar A.** – Full Stack Developer, ML Engineer
 - **Tharun Kumarr A.** - Full Stack Developer, ML Engineer
-- ❤️ Made with love from team SustAIn
 
----
+❤️ Made with love from team SustAIn
+
 
 ## 📜 License
 © 2025 Team SustAIn. All rights reserved.
