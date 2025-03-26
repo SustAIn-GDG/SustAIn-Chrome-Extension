@@ -107,34 +107,40 @@ export function fetchConversationFromChromeStorage(conversationId) {
   });
 }
 
-export async function sendConversationToBackend(
-  conversationData,
-  conversationId
-) {
-  return await fetch("https://sustain-backend-xb7t.onrender.com/calculate_metrics", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(conversationData),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Failed to send data to the backend.");
-      }
-      console.log("Response:", response);
-      return response.json();
-    })
-    .then((data) => {
-      console.log("Data recieved successfully:", data);
+export async function sendConversationToBackend(conversationData, conversationId) {
+  try {
+    const response = await fetch("https://sustain-backend-xb7t.onrender.com/calculate_metrics", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(conversationData),
+    });
+
+    // Check for specific HTTP status codes
+    if (response.status === 200) {
+      const data = await response.json();
+      console.log("Data received successfully:", data);
       deleteConversationFromChromeStorage(conversationId);
       return data;
-    })
-    .catch((error) => {
-      console.error("Error sending data:", error);
-      throw error;
-    });
+    } else if (response.status === 400) {
+      console.error("Bad Request: The data sent might be invalid.");
+      throw new Error("Bad Request (400): Please check the data you're submitting.");
+    } else if (response.status === 401) {
+      console.error("Unauthorized: Authentication failed.");
+      throw new Error("Unauthorized (401): You are not authorized to perform this action.");
+    } else if (response.status === 500) {
+      console.error("Server Error: Internal server issue.");
+      throw new Error("Server Error (500): Please try again later.");
+    } else {
+      console.error(`Unexpected error with status code: ${response.status}`);
+      throw new Error(`Unexpected Error (${response.status}): ${response.statusText}`);
+    }
+  } catch (error) {
+    return "ERROR"
+  }
 }
+
 
 export function deleteConversationFromChromeStorage(conversationId) {
   // Delete from chrome.storage
