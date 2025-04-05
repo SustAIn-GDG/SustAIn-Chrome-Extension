@@ -1,4 +1,5 @@
 let global_conversation_id = "";
+let requestResponseGap;
 
 chrome.webRequest.onCompleted.addListener(
   function (details) {
@@ -22,6 +23,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
     notifyUser();
     console.log(details);
+    requestResponseGap = Date.now()
     if (
       details.url.includes("gemini.google.com") &&
       details.url.includes("StreamGenerate")
@@ -148,8 +150,8 @@ Conversation data structure in storageAPI.
   "conv123": {
     "server_ip": "192.168.1.10",
     "queries": [
-      { "query": "Hello, how are you?", "model": "GPT-4" },
-      { "query": "What's the weather today?", "model": "GPT-4" }
+      { "query": "Hello, how are you?", "model": "GPT-4", time: duration },
+      { "query": "What's the weather today?", "model": "GPT-4", time: duration }
     ]
   }
 }
@@ -169,7 +171,7 @@ function storeConversation(conversationId, query, model) {
       };
     }
     // Add query to the list
-    conversations[conversationId].queries.push({ query: query, model: model });
+    conversations[conversationId].queries.push({ query: query, model: model, time: "" });
     // Store updated conversations in Chrome storage
     chrome.storage.local.set({ conversations }, function () {
       console.log("Conversation stored successfully:", conversations);
@@ -186,6 +188,12 @@ function updateServerIp(conversationId, serverIp) {
     if (conversations[conversationId]) {
       // Update the server IP
       conversations[conversationId].server_ip = serverIp;
+
+      const queries = conversations[conversationId].queries;
+      if (queries.length > 0) {
+        const lastQuery = queries[queries.length - 1];
+        lastQuery.time = ((Date.now() - requestResponseGap) / 1000).toFixed(2); // in seconds
+      }
 
       // Store updated conversations in Chrome storage
       chrome.storage.local.set({ conversations }, function () {
