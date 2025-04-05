@@ -107,15 +107,21 @@ export function fetchConversationFromChromeStorage(conversationId) {
   });
 }
 
-export async function sendConversationToBackend(conversationData, conversationId) {
+export async function sendConversationToBackend(
+  conversationData,
+  conversationId
+) {
   try {
-    const response = await fetch("https://sustain-backend-xb7t.onrender.com/calculate_metrics", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(conversationData),
-    });
+    const response = await fetch(
+      "https://sustain-backend-xb7t.onrender.com/calculate_metrics",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(conversationData),
+      }
+    );
 
     // Check for specific HTTP status codes
     if (response.status === 200) {
@@ -125,22 +131,27 @@ export async function sendConversationToBackend(conversationData, conversationId
       return data;
     } else if (response.status === 400) {
       console.error("Bad Request: The data sent might be invalid.");
-      throw new Error("Bad Request (400): Please check the data you're submitting.");
+      throw new Error(
+        "Bad Request (400): Please check the data you're submitting."
+      );
     } else if (response.status === 401) {
       console.error("Unauthorized: Authentication failed.");
-      throw new Error("Unauthorized (401): You are not authorized to perform this action.");
+      throw new Error(
+        "Unauthorized (401): You are not authorized to perform this action."
+      );
     } else if (response.status === 500) {
       console.error("Server Error: Internal server issue.");
       throw new Error("Server Error (500): Please try again later.");
     } else {
       console.error(`Unexpected error with status code: ${response.status}`);
-      throw new Error(`Unexpected Error (${response.status}): ${response.statusText}`);
+      throw new Error(
+        `Unexpected Error (${response.status}): ${response.statusText}`
+      );
     }
   } catch (error) {
-    return "ERROR"
+    return "ERROR";
   }
 }
-
 
 export function deleteConversationFromChromeStorage(conversationId) {
   // Delete from chrome.storage
@@ -338,4 +349,49 @@ export function extrapolateMetrics(
   )} people/day), and consume ${totalEnergy.toFixed(
     1
   )} GWh of energy (powers ${formatNumber(homesPerDay)} homes/day).`;
+}
+
+export function aggregateAllMetrics() {
+  return new Promise((resolve, reject) => {
+    try {
+      // Retrieve from localStorage
+      const localData = localStorage.getItem("sustAIn_conversations");
+      const localConversations = localData ? JSON.parse(localData) : {};
+
+      let aggregatedMetrics = {
+        CarbonEmission: 0,
+        EnergyConsumption: 0,
+        WaterConsumption: 0,
+      };
+
+      // Aggregate localStorage data
+      Object.values(localConversations).forEach((metrics) => {
+        aggregatedMetrics.CarbonEmission += Number(metrics.CarbonEmission) || 0;
+        aggregatedMetrics.EnergyConsumption +=
+          Number(metrics.EnergyConsumption) || 0;
+        aggregatedMetrics.WaterConsumption +=
+          Number(metrics.WaterConsumption) || 0;
+      });
+
+      // Retrieve from chrome.storage.local
+      chrome.storage.local.get("conversations", function (result) {
+        if (result.conversations) {
+          Object.values(result.conversations).forEach((metrics) => {
+            aggregatedMetrics.CarbonEmission +=
+              Number(metrics.CarbonEmission) || 0;
+            aggregatedMetrics.EnergyConsumption +=
+              Number(metrics.EnergyConsumption) || 0;
+            aggregatedMetrics.WaterConsumption +=
+              Number(metrics.WaterConsumption) || 0;
+          });
+        }
+
+        console.log("Aggregated Metrics:", aggregatedMetrics);
+        resolve(aggregatedMetrics);
+      });
+    } catch (error) {
+      console.error("Error aggregating metrics:", error);
+      reject(error);
+    }
+  });
 }
