@@ -395,3 +395,13 @@ export function aggregateAllMetrics() {
     }
   });
 }
+
+export function getEnvironmentalContext(co2) {
+  if (co2 > 5000)
+    return "AI queries create digital footprints. Thanks for being mindful.";
+  if (co2 > 2000)
+    return "Your conscious tech choices help reduce global data center demand.";
+  if (co2 > 500)
+    return "Purpose-driven AI use creates more meaningful results.";
+  return "Thank you for being mindful about your digital footprint.";
+}

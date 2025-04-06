@@ -1,5 +1,8 @@
 import Header from "./components/Header";
-import MetricsDisplay from "./components/MetricsDisplay";
+import {
+  MetricsDisplay,
+  AggregateMetricsDisplay,
+} from "./components/MetricsDisplay";
 import AnimatedLoader from "./components/animatedLoader";
 import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
@@ -24,6 +27,8 @@ export default function Popup() {
   const [compatability, setCompatability] = useState(null);
   const [errorFromBackend, setErrorFromBackend] = useState(false);
   const [isStart, setIsStart] = useState(false);
+  const [showAggregateMetrics, setShowAggregateMetrics] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,17 +67,16 @@ export default function Popup() {
           const metrics =
             getConversationMetricsFromBrowserStorage(conversationId);
           if (metrics == null) {
-            console.error("Conversatiom metrics not found in browser storage!");
+            console.error("Conversation metrics not found in browser storage!");
             setIsLoading(false);
             setIsStart(true);
-            // TODO: In this scenario, we should prompt the user to continue chating with the application and click again.
             return;
           } else setIsStart(false);
 
           setCo2(metrics.CarbonEmission);
           setWater(metrics.WaterConsumption);
           setEnergy(metrics.EnergyConsumption);
-          console.log("Metrics retrived from browser storage :)");
+          console.log("Metrics retrieved from browser storage :)");
           setIsLoading(false);
           return;
         }
@@ -93,14 +97,14 @@ export default function Popup() {
               getConversationMetricsFromBrowserStorage(conversationId);
             if (metrics == null) {
               console.error(
-                "Conversatiom metrics not found in browser storage!"
+                "Conversation metrics not found in browser storage!"
               );
               return;
             }
             setCo2(metrics.CarbonEmission);
             setWater(metrics.WaterConsumption);
             setEnergy(metrics.EnergyConsumption);
-            console.log("Metrics retrived from browser storage :)");
+            console.log("Metrics retrieved from browser storage :)");
             setIsLoading(false);
           }, 1000);
         } catch (err) {
@@ -116,21 +120,32 @@ export default function Popup() {
     fetchData();
   }, []);
 
+  const toggleAggregateMetrics = () => {
+    // Add a transition state to manage the animation
+    setIsTransitioning(true);
+
+    // Delay the actual state change to allow exit animations to complete
+    setTimeout(() => {
+      setShowAggregateMetrics(!showAggregateMetrics);
+      setIsTransitioning(false);
+    }, 300); // Adjust timing as needed
+  };
+
   return (
     <main className="overflow-hidden text-black bg-white w-[360px] max-w-[360px] font-sans h-full flex flex-col">
-      {/* Green Gradient Background */}
-      <div className="fixed inset-0 w-full h-full bg-gradient-to-b from-teal-300 to-teal-400 z-0" />
+      {/* Green Gradient Background with subtle animation */}
+      <div className="fixed inset-0 w-full h-full bg-gradient-to-b from-teal-300 to-teal-400 z-0 animate-gradient-shift" />
 
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col h-full overflow-hidden">
         <Header />
 
-        <div className="flex-grow flex items-center justify-center px-6">
+        <div className="flex-grow flex items-center justify-center px-6 transition-all duration-500">
           {isLoading ? (
-            <div className="mt-2">
+            <div className="mt-2 animate-in fade-in duration-500">
               <AnimatedLoader />
             </div>
           ) : compatability ? (
-            <div className="text-center p-4 bg-white rounded-lg shadow-md mt-4">
+            <div className="text-center p-4 bg-white rounded-lg shadow-md mt-4 animate-in fade-in slide-in-from-bottom duration-500">
               <h3 className="font-bold text-lg text-teal-600 mb-2">
                 Welcome to SustAIn!
               </h3>
@@ -150,13 +165,26 @@ export default function Popup() {
             </div>
           ) : errorFromBackend == false ? (
             isStart == false ? (
-              <MetricsDisplay
-                siteIcon={siteIcon}
-                conversationID={conversationId}
-                currentCO2={co2}
-                currentWater={water}
-                currentEnergy={energy}
-              />
+              <div
+                className={`w-full transition-all duration-300 ${
+                  isTransitioning
+                    ? "opacity-0 scale-95"
+                    : "opacity-100 scale-100"
+                }`}
+              >
+                {showAggregateMetrics ? (
+                  <AggregateMetricsDisplay onClose={toggleAggregateMetrics} />
+                ) : (
+                  <MetricsDisplay
+                    siteIcon={siteIcon}
+                    conversationID={conversationId}
+                    currentCO2={co2}
+                    currentWater={water}
+                    currentEnergy={energy}
+                    onToggleAggregateView={toggleAggregateMetrics}
+                  />
+                )}
+              </div>
             ) : (
               <InfoCard />
             )

@@ -1,3 +1,142 @@
+html,
 body {
-  height: 700px;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+}
+
+.fade-in {
+  animation-name: appear;
+  animation-duration: 0.5s;
+}
+
+.slide-in-from-left {
+  animation-name: slideFromLeft;
+  animation-duration: 0.5s;
+}
+
+.slide-in-from-right {
+  animation-name: slideFromRight;
+  animation-duration: 0.5s;
+}
+
+.slide-in-from-top {
+  animation-name: slideFromTop;
+  animation-duration: 0.5s;
+}
+
+.slide-in-from-bottom {
+  animation-name: slideFromBottom;
+  animation-duration: 0.5s;
+}
+
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.duration-200 {
+  animation-duration: 0.2s;
+}
+
+.duration-300 {
+  animation-duration: 0.3s;
+}
+
+.duration-500 {
+  animation-duration: 0.5s;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
 }
