@@ -1,8 +1,6 @@
 import Header from "./components/Header";
-import {
-  MetricsDisplay,
-  AggregateMetricsDisplay,
-} from "./components/MetricsDisplay";
+import { MetricsDisplay } from "./components/MetricsDisplay";
+import { AggregateMetricsDisplay } from "./components/aggregatorDisplay";
 import AnimatedLoader from "./components/animatedLoader";
 import Footer from "./components/Footer";
 import { useEffect, useState } from "react";
