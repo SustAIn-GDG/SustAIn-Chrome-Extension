@@ -23,7 +23,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
     notifyUser();
     console.log(details);
-    requestResponseGap = Date.now()
+    requestResponseGap = Date.now();
     if (
       details.url.includes("gemini.google.com") &&
       details.url.includes("StreamGenerate")
@@ -99,14 +99,15 @@ function handleGeminiRequest(details) {
 function handleChatGPTRequest(details) {
   const url = new URL(details.url);
   const pathSegments = url.pathname.split("/");
+
   if (
-    pathSegments.length == 4 &&
+    pathSegments.length === 4 &&
     pathSegments[2] === "conversation" &&
     details.method === "GET"
   ) {
-    const conversationId = pathSegments[3]; // Extract conversation ID
+    const conversationId = pathSegments[3];
     console.log("New Conversation ID:", conversationId);
-  } else if (details.requestBody && pathSegments.length == 3) {
+  } else if (details.requestBody && pathSegments.length === 3) {
     const decoder = new TextDecoder("utf-8");
     const requestBody = details.requestBody.raw
       ? decoder.decode(details.requestBody.raw[0].bytes)
@@ -115,19 +116,63 @@ function handleChatGPTRequest(details) {
     if (requestBody) {
       try {
         const payload = JSON.parse(requestBody);
-        // Extracting specific fields
         const model =
           payload.messages[0]?.model || payload?.model || "No model found";
-        const data = payload.messages[0]?.content?.parts || "No messages found";
         const conversationId =
           payload?.conversation_id || "Conversation ID not found";
+        const message = payload.messages[0];
+        const parts = message.content?.parts || [];
+
+        // Extract user query (assumed to be the last string in `parts`)
+        const userQuery =
+          parts.filter((part) => typeof part === "string").pop() ||
+          "No query found";
+
+        // Check for file upload via attachments or image asset pointer
+        const hasFile =
+          message.metadata?.attachments?.length > 0 ||
+          parts.some(
+            (part) =>
+              typeof part === "object" &&
+              part.content_type === "image_asset_pointer"
+          );
+
+        if (payload?.messages?.[0]?.metadata?.attachments?.length > 0) {
+          const file = payload.messages[0].metadata.attachments[0];
+          const mimeType = file.mime_type;
+          const fileName = file.name;
+
+          let fileType = "unknown";
+          if (mimeType.startsWith("image/")) {
+            fileType = "image";
+          } else if (mimeType === "application/pdf") {
+            fileType = "pdf";
+          } else if (
+            mimeType === "application/msword" ||
+            mimeType ===
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+          ) {
+            fileType = "document";
+          } else if (
+            mimeType === "application/vnd.ms-excel" ||
+            mimeType ===
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          ) {
+            fileType = "spreadsheet";
+          }
+
+          console.log("File Type:", fileType);
+          console.log("File Name:", fileName);
+        }
 
         console.log("Extracted ChatGPT Data:");
         console.log("Model:", model);
-        console.log("Data:", data);
+        console.log("User Query:", userQuery);
+        console.log("Uploaded File:", hasFile);
         console.log("Conversation ID:", conversationId);
+
         global_conversation_id = conversationId;
-        storeConversation(conversationId, data[0], model);
+        storeConversation(conversationId, userQuery, model);
       } catch (error) {
         console.error("Failed to parse ChatGPT request body:", error);
       }
@@ -171,7 +216,11 @@ function storeConversation(conversationId, query, model) {
       };
     }
     // Add query to the list
-    conversations[conversationId].queries.push({ query: query, model: model, time: "" });
+    conversations[conversationId].queries.push({
+      query: query,
+      model: model,
+      time: "",
+    });
     // Store updated conversations in Chrome storage
     chrome.storage.local.set({ conversations }, function () {
       console.log("Conversation stored successfully:", conversations);
