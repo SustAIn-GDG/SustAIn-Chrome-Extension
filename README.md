@@ -37,14 +37,13 @@ The project includes:
 
 ## 🧭 Project Workflow Diagram
 
-![workflow diagram](https://github.com/user-attachments/assets/32289700-86c4-43fe-8faf-91b24bfd34a8)
+![workflow diagram](https://github.com/user-attachments/assets/fb85fcb4-5efe-4a85-a6a2-694439d5beae)
 
 ## 🧭 Project Architecture Diagram
 
 The following diagram outlines the overall system architecture and component interactions:
 
-![Architecture Diagram](https://github.com/user-attachments/assets/584fd6e6-6d34-4669-b32e-1b3dfbb84815)
-
+![Architecture Diagram](https://github.com/user-attachments/assets/f817f1ac-ff02-402b-8840-84df8ca938d1)
 
 > The diagram captures:
 > - How browser extension and React components interact with the backend
